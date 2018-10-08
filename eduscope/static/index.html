@@ -1,0 +1,194 @@
+<!Doctype html>
+
+<html >
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.2/angular.min.js"></script>
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.1/angular.min.js"></script> -->
+
+    <link rel="stylesheet" type="text/css" href="css/kurento.css">
+
+      <!--//js files link-->
+      <script  src="js/index.js"></script>
+      <script  src="js/cameraStream/cam.js"></script>
+
+
+
+      <!--<script src="https://code.angularjs.org/1.2.6/angular.min.js"></script>-->
+
+<!-- Angular Fullscreen directive -->
+<script src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/98887/angular-fullscreen.js"></script>
+
+
+<link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="bower_components/demo-console/index.css">
+<link rel="stylesheet" href="bower_components/ekko-lightbox/dist/ekko-lightbox.min.css">
+<link rel="stylesheet" href="css/kurento.css">
+
+<script src="bower_components/adapter.js/adapter.js"></script>
+<script src="bower_components/jquery/dist/jquery.min.js"></script>
+<script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="bower_components/demo-console/index.js"></script>
+<script src="bower_components/draggabilly/dist/draggabilly.pkgd.min.js"></script>
+<script src="bower_components/ekko-lightbox/dist/ekko-lightbox.min.js"></script>
+
+
+<script src="https://unpkg.com/draggabilly@2/dist/draggabilly.pkgd.min.js"></script>
+      <!--<script src="https://code.jquery.com/jquery-1.9.1.min.js"></script>-->
+
+      <script src="bower_components/kurento-client/js/kurento-client.js"></script>
+      <script src="bower_components/kurento-utils/js/kurento-utils.js"></script>
+  </head>
+
+<body  ng-app="eduscope" ng-controller="buttonController" data-ng-init="onload()">
+
+<!-- <div class="header">
+  <h1>Header</h1>
+  <p>Resize the browser window to see the responsive effect.</p>
+</div> -->
+
+    <div class="topnav">
+
+        <img class="logo" src="img/eduscope_logo.png" alt="Smiley face" height="auto" width="200px">
+
+    </div>
+
+    <div class="row">
+      <div class= "column left">
+          <input type= "text" name="name"  ng-model="name"  id="name" placeholder="Name"/></br></br>
+          <button type="button" class="register r1" id= "register" ng-click="register()" >Register</button>
+          <br><br>
+          <label>Peer Name</label>
+          <input type="text"  id="peer" placeholder ="Peer Name" />
+          <!--<div class="videoCam" id="videoCam">-->
+              <!--<video id="camVideos" name="camVideos"  ></video>-->
+              <!--&lt;!&ndash;- <canvas id="canvas" width="640" height="480"></canvas> &ndash;&gt;-->
+          <!--</div>-->
+      </div>
+
+    <div class="column middle">
+      <div class="video-container">
+        <div class="videoArea">
+            <!--<div class ="videoBig"  ng-if ="callingTypes.callingId == '3' ">-->
+                <!--<audio class= "audioOutput" id="audioOutput" name="audioOutput" ng-bind="audioOutput" autoplay width="800px" height="400px" poster="img/eye.png" fullscreen ></audio>-->
+            <!--</div>-->
+          <div class ="videoBig">
+            <video class= "videoOuput" id="videoOutput" name="videoOutput" ng-bind="videoOutput" autoplay width="800px" height="400px" poster="img/eye.png" fullscreen ></video>
+          </div>
+          <div class="videoSmall" id="videoSmall">
+              <div ng-if="callingTypes.callingId == '1' ">
+                  <video id="videoInput" name="videoInput" ng-bind="videoInput" autoplay width="240px" height="180px" poster="img/eye.png" fullscreen ></video>
+              </div>
+              <div ng-if="callingTypes.callingId == '2' ">
+                  <canvas id="myCanvas" width="240px" height="180px" autoplay style="border:1px solid #d3d3d3;" fullscreen></canvas>
+              </div>
+              <!--<div ng-if="callingTypes.callingId == '3'">-->
+                  <!--<audio id="audioInput" autoplay  control></audio>-->
+              <!--</div>-->
+
+          </div>
+            <!--<div class="videoCam" id="videoCam">-->
+                <!--<video id="camVideo" name="camVideo" ng-bind="camVideo" autoplay  width="240px" height="180px" poster="img/eye.png" fullscreen ></video>-->
+                <!--&lt;!&ndash;- <canvas id="canvas" width="640" height="480"></canvas> &ndash;&gt;-->
+            <!--</div>-->
+        </div>
+
+
+        <div class ="vdo-btn">
+          <div class="button-bar" >
+
+            <div class="btn-group">
+              <button title="Mute/Unmute" ng-click="mute()"> <i class="fa fa-microphone"  style="font-size:36px"></i></button>
+              <button title="Start/Stop camera" ng-click="onOffVideocam()" id="buttonVideocam"><i class="fa fa-video-camera" style="font-size:36px"></i></button>
+              <button title="Call" name="call" ng-click="call(callingTypes)" ng-show="callVisible"><i class="material-icons" style="font-size:36px">call</i></button>
+              <button title="Call End" name="callEnd"  ng-click="stop()" ng-show="stopVisible"><i class="material-icons" style="font-size:36px;color:red">call_end</i></button>
+            </div>
+
+            <div class="btn-group">
+              <button title="Fullscreen" ng-click="goFullscreen()"><i class="fa fa-square-o" style="font-size:36px;"></i></button>
+              <button title="Setting"  id="myBtn"><i class="fa fa-cog" style="font-size:36px;"></i></button>
+
+                      <div id="myModal" class="modal">
+
+                          <!-- Modal content -->
+                          <div class="modal-content">
+                            <span class="close">&times;</span>
+                              <label>video Type</label>
+                               <select ng-model="callingTypes.callingId" ng-options="callType.id as callType.type for callType in callingTypes.callings"></select>
+                              </select>
+                              <div ng-if="callingTypes.callingId == '2'">
+                                  <input type="text" ng-model="callingTypes.url" placeholder="camera url" ng-value="url">
+                              </div>
+                          <label>Audio input source:</label>
+                          <select>
+                          <option value="Default">Default</option>
+                          <option value="Audio">Built-in Audio Analog Stereo</option>
+                          </select>
+                          <label>Audio Output Destination:</label>
+                          <select>
+                          <option value="Default">Default</option>
+                          <option value="Audio">Build in Audio digital Sterio</option>
+                          </select>
+                          <label>Video Source</label>
+                          <select>
+                          <option value="Default">Default</option>
+                          <option value="cam">Hp HD web cam</option>
+                          </select>
+                          </div>
+
+                        </div>
+                        <script>
+                          // Get the modal
+                          var modal = document.getElementById('myModal');
+
+                          // Get the button that opens the modal
+                          var btn = document.getElementById("myBtn");
+
+                          // Get the <span> element that closes the modal
+                          var span = document.getElementsByClassName("close")[0];
+                          span.onclick = function() {
+                              modal.style.display = "none";
+                          }
+
+                          // When the user clicks the button, open the modal
+                          btn.onclick = function() {
+                              modal.style.display = "block";
+                          }
+
+                          // When the user clicks on <span> (x), close the modal
+                          var span = document.getElementsByClassName("close")[0];
+                          span.onclick = function() {
+                              modal.style.display = "none";
+                          }
+
+                          // When the user clicks anywhere outside of the modal, close it
+                          window.onclick = function(event) {
+                              if (event.target == modal) {
+                                  modal.style.display = "none";
+                              }
+                          }
+                          </script>
+            </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  <!-- <div class= "column right">
+
+
+  </div> -->
+
+  </div>
+
+
+
+</body>
+</html>
